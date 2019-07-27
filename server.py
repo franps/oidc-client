@@ -39,11 +39,18 @@ def home():
 
 @app.route('/callback')
 def callback_handling():
-    # client.authorize_access_token()
+    # client.authorize_access_token() #parse_request_uri_response(uri, state)
     code = request.args.get('code')
     state = request.args.get('state')
     print(session)
     return render_template('success.html', code=code, state=state)
+
+# https://oauthlib.readthedocs.io/en/latest/oauth2/clients/webapplicationclient.html
+# https://flask-oauthlib.readthedocs.io/en/latest/client.html
+@app.route('/accessToken')
+def request_accessToken():
+    #prepare_request_body(code=None, redirect_uri=None, body='', include_client_id=True, **kwargs)
+    return "success"
 
 
 @app.route('/login')
