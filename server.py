@@ -1,6 +1,7 @@
 import json
+import requests
 from authlib.flask.client import OAuth
-from flask import Flask, redirect, request, render_template, session
+from flask import Flask, redirect, request, render_template, session, jsonify
 from functools import wraps
 
 redirect_uri = 'http://localhost:3000/callback'
@@ -15,21 +16,12 @@ client = oauth.register(
     client_id='xxx',
     client_secret='xxx',
     api_base_url='https://auth-testing.iduruguay.gub.uy/oidc/v1',
-    access_token_url='https://auth-testing.iduruguay.gub.uy/oidc/v1/oauth/token',
+    access_token_url='https://auth-testing.iduruguay.gub.uy/oidc/v1/token',
     authorize_url='https://auth-testing.iduruguay.gub.uy/oidc/v1/authorize',
     client_kwargs={
-        'scope': 'openid',
+        'scope': 'openid email',
     },
 )
-
-
-def requires_auth(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        if 'openid' not in session:
-            return redirect('/login')
-        return f(*args, **kwargs)
-    return decorated
 
 
 @app.route('/')
@@ -39,7 +31,6 @@ def home():
 
 @app.route('/callback')
 def callback_handling():
-    # client.authorize_access_token() #parse_request_uri_response(uri, state)
     code = request.args.get('code')
     state = request.args.get('state')
     print(session)
@@ -47,9 +38,18 @@ def callback_handling():
 
 # https://oauthlib.readthedocs.io/en/latest/oauth2/clients/webapplicationclient.html
 # https://flask-oauthlib.readthedocs.io/en/latest/client.html
-@app.route('/accessToken')
-def request_accessToken():
-    #prepare_request_body(code=None, redirect_uri=None, body='', include_client_id=True, **kwargs)
+@app.route('/accessToken/<code>')
+def request_accessToken(code):
+    # print('https://auth-testing.iduruguay.gub.uy/oidc/v1/token')
+    headers = {'Authorization': 'Basic xxxx',
+               'Content-Type': 'application/x-www-form-urlencoded'}
+    body = {'code': str(code), 'grant_type': 'authorization_code',
+            'redirect_uri': redirect_uri}
+    req = requests.post(
+        'https://auth-testing.iduruguay.gub.uy/oidc/v1/token', headers=headers, data=body)
+    print(req)
+    #token = client.authorize_access_token(code=code)
+    # print(token)
     return "success"
 
 
