@@ -1,3 +1,4 @@
+import base64
 import json
 import requests
 from authlib.flask.client import OAuth
@@ -19,9 +20,26 @@ client = oauth.register(
     access_token_url='https://auth-testing.iduruguay.gub.uy/oidc/v1/token',
     authorize_url='https://auth-testing.iduruguay.gub.uy/oidc/v1/authorize',
     client_kwargs={
-        'scope': 'openid email',
+        'scope': 'openid email personal_info auth_info',
     },
 )
+
+
+def sendtokenreq(code):
+    headers = {'Authorization': 'Basic xxx',
+               'Content-Type': 'application/x-www-form-urlencoded'}
+    body = {'code': str(code), 'grant_type': 'authorization_code',
+            'redirect_uri': redirect_uri}
+    toreturn = [False, {}]
+    try:
+        req = requests.post(
+            'https://auth-testing.iduruguay.gub.uy/oidc/v1/token', headers=headers, data=body, verify=False)
+        toreturn[0] = True
+        toreturn[1] = req.json()
+    except requests.exceptions.ConnectionError:
+        toreturn[0] = False
+        toreturn[1] = "Connection refused"
+    return toreturn
 
 
 @app.route('/')
@@ -34,23 +52,29 @@ def callback_handling():
     code = request.args.get('code')
     state = request.args.get('state')
     print(session)
-    return render_template('success.html', code=code, state=state)
+    return render_template('code.html', code=code, state=state)
 
-# https://oauthlib.readthedocs.io/en/latest/oauth2/clients/webapplicationclient.html
-# https://flask-oauthlib.readthedocs.io/en/latest/client.html
+
 @app.route('/accessToken/<code>')
 def request_accessToken(code):
-    # print('https://auth-testing.iduruguay.gub.uy/oidc/v1/token')
-    headers = {'Authorization': 'Basic xxxx',
-               'Content-Type': 'application/x-www-form-urlencoded'}
-    body = {'code': str(code), 'grant_type': 'authorization_code',
-            'redirect_uri': redirect_uri}
-    req = requests.post(
-        'https://auth-testing.iduruguay.gub.uy/oidc/v1/token', headers=headers, data=body)
-    print(req)
-    #token = client.authorize_access_token(code=code)
-    # print(token)
-    return "success"
+    response = sendtokenreq(code)
+    if response:
+        body = response[1]
+        idtok = body.get('id_token')
+
+        return render_template('userinfo.html', token=idtok)
+
+
+@app.route('/decodejwt/<token>')
+def decodejwt(token):
+    idtk = token.split(".")[1]
+    i = len(idtk) % 4
+    while(i > 0):
+        idtk += "="
+        i -= 1
+    print(idtk)
+    data = base64.b64decode(idtk)
+    return render_template('userinfo.html', token=data)
 
 
 @app.route('/login')
