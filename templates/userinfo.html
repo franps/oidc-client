@@ -1,55 +1,22 @@
 <html>
-  <head>
-    <style>
-      div {
-        border-radius: 5px;
-        padding: 10% 10%;
-        text-align: center;
-      }
-      a {
-        width: 100%;
-        background-color: #4caf50;
-        color: white;
-        padding: 14px 20px;
-        margin: 8px 0;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 15px;
-      }
-      p {
-        width: 100%;
-        background-color: #4cadd0;
-        color: white;
-        padding: 14px 20px;
-        margin: 8px 0;
-        border: none;
-        border-radius: 4px;
-        font-size: 15px;
-        word-wrap: break-word;
-      }
-      h {
-        font-size: 25px;
-      }
-      .box {
-        font-family: Helvetica;
-        background-color: #f2f2f2;
-        width: 60%;
-        height: 50%;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="box">
-      <div>
-        <h>Your info</h>
-        <br /><br /><br /><br />
-        <p>The idtoken is : {{ token }}</p>
-        <br /><br />
-        <a href="/decodejwt/{{ token }}">Decode token</a>
-        <br /><br />
-        <a href="/login">Get another code</a>
-      </div>
+
+<head>
+  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/static/normalize.css">
+  <link rel="stylesheet" href="/static/skeleton.css">
+  <link rel="stylesheet" href="/static/custom.css">
+</head>
+
+<body>
+  <div class="container">
+    <div>
+      <h3 class="title">Your info</h3>
+      <p>The idtoken is :</p>
+      <pre><code>{{ token }}</code></pre>
+      <a class="button" href="/decodejwt/{{ token }}">Decode token</a>
+      <a class="button" href="/login">Get another code</a>
     </div>
-  </body>
+  </div>
+</body>
+
 </html>

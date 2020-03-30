@@ -9,15 +9,13 @@
 
 <body>
   <div class="container">
-    <section class="header">
-      <h1 class="tytle">OpenID Example</h1>
-      <a class="button button-primary" href="/login">Log In</a>
-      <br />
-      <br />
-      <br />
-      <br />
-      <p>by Pancho</p>
-    </section>
+    <div>
+      <h3 class="title">You logged successfully!</h3>
+      <pre><code>Your code is : {{ code }}</code></pre>
+      <pre><code>Your state is : {{ state }}</code></pre>
+      <a class="button" href="/login">Get another code</a>
+      <a class="button" href="/accessToken/{{ code }}">Get Access Token</a>
+    </div>
   </div>
 </body>
 

@@ -20,12 +20,36 @@ client = oauth.register(
     access_token_url='https://auth-testing.iduruguay.gub.uy/oidc/v1/token',
     authorize_url='https://auth-testing.iduruguay.gub.uy/oidc/v1/authorize',
     client_kwargs={
-        'scope': 'openid email personal_info auth_info',
+        'scope': 'openid document personal_info auth_info',
     },
 )
 
 
+@app.route('/')
+def home():
+    return render_template('home.html')
+
+@app.route('/login')
+def login():
+    return client.authorize_redirect(redirect_uri=redirect_uri)
+
+@app.route('/callback')
+def callback_handling():
+    code = request.args.get('code')
+    state = request.args.get('state')
+    return render_template('code.html', code=code, state=state)
+
+@app.route('/accessToken/<code>')
+def request_accessToken(code):
+    response = sendtokenreq(code)
+    if response:
+        body = response[1]
+        print (body)
+        idtok = body.get('id_token')
+        return render_template('userinfo.html', token=idtok)
+
 def sendtokenreq(code):
+    #print(base64.b64encode(b'xxx:xxx'))
     headers = {'Authorization': 'Basic xxx',
                'Content-Type': 'application/x-www-form-urlencoded'}
     body = {'code': str(code), 'grant_type': 'authorization_code',
@@ -42,29 +66,6 @@ def sendtokenreq(code):
     return toreturn
 
 
-@app.route('/')
-def home():
-    return render_template('home.html')
-
-
-@app.route('/callback')
-def callback_handling():
-    code = request.args.get('code')
-    state = request.args.get('state')
-    print(session)
-    return render_template('code.html', code=code, state=state)
-
-
-@app.route('/accessToken/<code>')
-def request_accessToken(code):
-    response = sendtokenreq(code)
-    if response:
-        body = response[1]
-        idtok = body.get('id_token')
-
-        return render_template('userinfo.html', token=idtok)
-
-
 @app.route('/decodejwt/<token>')
 def decodejwt(token):
     idtk = token.split(".")[1]
@@ -73,13 +74,8 @@ def decodejwt(token):
         idtk += "="
         i -= 1
     print(idtk)
-    data = base64.b64decode(idtk)
+    data = base64.b64decode(idtk).decode("utf-8")
     return render_template('userinfo.html', token=data)
-
-
-@app.route('/login')
-def login():
-    return client.authorize_redirect(redirect_uri=redirect_uri)
 
 
 if __name__ == "__main__":
