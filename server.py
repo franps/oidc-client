@@ -44,9 +44,13 @@ def request_accessToken(code):
     response = sendtokenreq(code)
     if response:
         body = response[1]
-        print (body)
+        #print (body)
+        atoken =  body.get("access_token")
+        rtoken =  body.get("refresh_token")
+        ttype =  body.get("token_type")
+        expires =  body.get("expires_in")
         idtok = body.get('id_token')
-        return render_template('userinfo.html', token=idtok)
+        return render_template('tokens.html', token=idtok, atoken=atoken,rtoken=rtoken,ttype=ttype,expires=expires)
 
 def sendtokenreq(code):
     #print(base64.b64encode(b'xxx:xxx'))
@@ -73,8 +77,8 @@ def decodejwt(token):
     while(i > 0):
         idtk += "="
         i -= 1
-    print(idtk)
     data = base64.b64decode(idtk).decode("utf-8")
+    data = data.replace(',"',',\n"')
     return render_template('userinfo.html', token=data)
 
 

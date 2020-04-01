@@ -1,0 +1,42 @@
+<html>
+
+<head>
+  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/static/normalize.css">
+  <link rel="stylesheet" href="/static/skeleton.css">
+  <link rel="stylesheet" href="/static/custom.css">
+</head>
+
+<body>
+  <div class="container">
+    <div>
+      <h3 class="title">Tokens</h3>
+      <div class="row">
+        <div class="six columns">
+          <p>Access token</p>
+          <pre><code>{{ atoken }}</code></pre>
+        </div>
+        <div class="six columns">
+          <p>Refresh token</p>
+          <pre><code>{{ rtoken }}</code></pre>
+        </div>
+      </div>
+      <div class="row">
+        <div class="six columns">
+          <p>Token type</p>
+          <pre><code>{{ ttype }}</code></pre>
+        </div>
+        <div class="six columns">
+          <p>Expires in</p>
+          <pre><code>{{ expires }}</code></pre>
+        </div>
+      </div>
+      <p>ID Token</p>
+      <pre><code>{{ token }}</code></pre>
+      <a class="button" href="/decodejwt/{{ token }}">Decode token</a>
+      <a class="button" href="/login">Get another code</a>
+    </div>
+  </div>
+</body>
+
+</html>
